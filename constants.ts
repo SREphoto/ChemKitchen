@@ -27,6 +27,20 @@ export interface LabAction {
 export interface CombinationResult {
   result_name: string;
   emoji: string;
+  explanation: string;
+}
+
+export interface LessonStep {
+  step: number;
+  instruction: string;
+  objective: string; // The chemical name we expect
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  description: string;
+  steps: LessonStep[];
 }
 
 export interface TimelineEntry {
@@ -95,7 +109,7 @@ export const LAB_ACTIONS: LabAction[] = [
   createAction('centrifuge', '🌀'), createAction('heat', '🔥'), createAction('cool', '❄️'),
   createAction('pressurize', '🗜️'), createAction('depressurize', '🎈'), createAction('irradiate', '☢️'),
   createAction('electrolyze', '⚡'), createAction('ferment', '🦠'), createAction('dissolve', '🌪️'),
-  
+
   // Serving/Finishing
   createAction('serve', '🔬'), createAction('pass', '🏳️'),
 ];
@@ -118,8 +132,108 @@ export const STARTING_INGREDIENTS: Ingredient[] = [
   { name: 'Water', emoji: '💧' }, { name: 'Carbon Dioxide', emoji: '💨' }, { name: 'Ammonia', emoji: '💨' },
   { name: 'Methane', emoji: '💨' }, { name: 'Hydrochloric Acid', emoji: '🧪' }, { name: 'Sodium Hydroxide', emoji: '🧪' },
   { name: 'Sulfuric Acid', emoji: '🧪' }, { name: 'Nitric Acid', emoji: '🧪' }, { name: 'Acetic Acid', emoji: '🧪' },
-  { name: 'Ethanol', emoji: '🍺' }, { name: 'Benzene', emoji: '⬡' }, { name: 'Phenol', emoji: '⬡' },
+  { name: 'Ethanl', emoji: '🍺' }, { name: 'Benzene', emoji: '⬡' }, { name: 'Phenol', emoji: '⬡' },
   { name: 'Salicylic Acid', emoji: '⬡' }, { name: 'Acetic Anhydride', emoji: '🧪' },
+  { name: 'Acetaminophen', emoji: '💊' }, { name: 'Ibuprofen', emoji: '💊' },
+  { name: '4-Aminophenol', emoji: '🧪' }, { name: 'Propanoic Acid', emoji: '🧪' },
+  { name: 'Methylamine', emoji: '🧪' }, { name: 'Phenylacetone', emoji: '🧪' },
+  { name: 'Aluminum Chloride', emoji: '🧪' }, { name: 'Lithium Aluminum Hydride', emoji: '🧪' },
+  { name: 'Aripiprazole', emoji: '💊' }, { name: 'Quinapril', emoji: '💊' },
+  { name: 'Rabeprazole', emoji: '💊' }, { name: 'Risedronate', emoji: '💊' },
+  { name: 'Pioglitazone', emoji: '💊' }, { name: 'Phentermine', emoji: '💊' },
+  { name: 'Epinephrine', emoji: '💉' }, { name: 'Albendazole', emoji: '💊' },
+  { name: 'Spironolactone', emoji: '💊' }, { name: 'Imiquimod', emoji: '💊' },
+  { name: 'Naproxen', emoji: '💊' }, { name: 'Nitazoxanide', emoji: '💊' },
+  { name: 'Fexofenadine', emoji: '💊' }, { name: 'Brimonidine', emoji: '💊' },
+  { name: 'Alprazolam', emoji: '💊' }, { name: 'Ramipril', emoji: '💊' },
+  { name: 'Glimepiride', emoji: '💊' }, { name: 'Zolpidem', emoji: '💊' },
+  { name: 'Lubiprostone', emoji: '💊' }, { name: 'Amoxicillin', emoji: '💊' },
+  { name: 'Amphetamine', emoji: '💊' }, { name: 'Testosterone', emoji: '💊' },
+  { name: 'Meclizine', emoji: '💊' }, { name: 'Hydralazine', emoji: '💊' },
+  { name: 'Donepezil', emoji: '💊' }, { name: 'Anastrozole', emoji: '💊' },
+  { name: 'Azelastine', emoji: '💊' }, { name: 'Candesartan', emoji: '💊' },
+  { name: 'Lorazepam', emoji: '💊' }, { name: 'Rosiglitazone', emoji: '💊' },
+  { name: 'Irbesartan', emoji: '💊' }, { name: 'Moxifloxacin', emoji: '💊' },
+  { name: 'Dutasteride', emoji: '💊' }, { name: 'Trimethoprim', emoji: '💊' },
+  { name: 'Mupirocin', emoji: '💊' }, { name: 'Entecavir', emoji: '💊' },
+  { name: 'Olmesartan', emoji: '💊' }, { name: 'Dicyclomine', emoji: '💊' },
+  { name: 'Clarithromycin', emoji: '💊' }, { name: 'Ibandronate', emoji: '💊' },
+  { name: 'Buspirone', emoji: '💊' }, { name: 'Exenatide', emoji: '💊' },
+  { name: 'Nebivolol', emoji: '💊' }, { name: 'Caffeine', emoji: '☕' },
+  { name: 'Verapamil', emoji: '💊' }, { name: 'Diltiazem', emoji: '💊' },
+  { name: 'Doxazosin', emoji: '💊' }, { name: 'Carisoprodol', emoji: '💊' },
+  { name: 'Clonidine', emoji: '💊' }, { name: 'Cefuroxime', emoji: '💊' },
+  { name: 'Celecoxib', emoji: '💊' }, { name: 'Citalopram', emoji: '💊' },
+  { name: 'Varenicline', emoji: '💊' }, { name: 'Tadalafil', emoji: '💊' },
+  { name: 'Ciprofloxacin', emoji: '💊' }, { name: 'Clindamycin', emoji: '💊' },
+  { name: 'Clobetasol', emoji: '💊' }, { name: 'Cocaine', emoji: '💊' },
+  { name: 'Benztropine', emoji: '💊' }, { name: 'Colchicine', emoji: '💊' },
+  { name: 'Prochlorperazine', emoji: '💊' }, { name: 'Carvedilol', emoji: '💊' },
+  { name: 'Hydrocortisone', emoji: '💊' }, { name: 'Warfarin', emoji: '💊' },
+  { name: 'Losartan', emoji: '💊' }, { name: 'Rosuvastatin', emoji: '💊' },
+  { name: 'Cyclobenzaprine', emoji: '💊' }, { name: 'Duloxetine', emoji: '💊' },
+  { name: 'Dexamethasone', emoji: '💊' }, { name: 'Prednisone', emoji: '💊' },
+  { name: 'Divalproex', emoji: '💊' }, { name: 'Trazodone', emoji: '💊' },
+  { name: 'Tolterodine', emoji: '💊' }, { name: 'Dexlansoprazole', emoji: '💊' },
+  { name: 'Diazepam', emoji: '💊' }, { name: 'Diclofenac', emoji: '💊' },
+  { name: 'Adapalene', emoji: '💊' }, { name: 'Fidaxomicin', emoji: '💊' },
+  { name: 'Fluconazole', emoji: '💊' }, { name: 'Phenytoin', emoji: '💊' },
+  { name: 'Valsartan', emoji: '💊' }, { name: 'Oxybutynin', emoji: '💊' },
+  { name: 'DMT', emoji: '🌀' }, { name: 'Dopamine', emoji: '🧠' },
+  { name: 'Venlafaxine', emoji: '💊' }, { name: 'Prasugrel', emoji: '💊' },
+  { name: 'Amitriptyline', emoji: '💊' }, { name: 'Pentosan', emoji: '💊' },
+  { name: 'Darifenacin', emoji: '💊' }, { name: 'Estradiol', emoji: '💊' },
+  { name: 'Raloxifene', emoji: '💊' }, { name: 'Fentanyl', emoji: '💉' },
+  { name: 'Metronidazole', emoji: '💊' }, { name: 'Tamsulosin', emoji: '💊' },
+  { name: 'Fluticasone', emoji: '💊' }, { name: 'Dexmethylphenidate', emoji: '💊' },
+  { name: 'Folic Acid', emoji: '💊' }, { name: 'Alendronate', emoji: '💊' },
+  { name: 'Ziprasidone', emoji: '💊' }, { name: 'Metformin', emoji: '💊' },
+  { name: 'Glipizide', emoji: '💊' }, { name: 'Heroin', emoji: '💊' },
+  { name: 'Hydrocodone', emoji: '💊' }, { name: 'Chlorthalidone', emoji: '💊' },
+  { name: 'Terazosin', emoji: '💊' },
+];
+
+export const SAFETY_SYSTEM_INSTRUCTION = `You are a laboratory safety validator. 
+Analyze the requested reaction (action + ingredients) and provide a safety report.
+
+DO NOT BLOCK the simulation. Instead, describe the real-world hazards as an educational warning.
+
+Return a JSON object with:
+- is_hazardous: boolean (true if it requires special precautions in a real lab)
+- hazard_level: 'low' | 'medium' | 'high'
+- warning_text: A concise warning about the real-world risks (e.g., 'Exothermic: potential for boiling', 'Toxic fumes: must use fume hood')
+- ppe_required: Array of recommended PPE (e.g. ['Goggles', 'Gloves', 'Fume Hood'])`;
+
+export const SAFETY_RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    is_hazardous: { type: Type.BOOLEAN },
+    hazard_level: { type: Type.STRING, enum: ['low', 'medium', 'high'] },
+    warning_text: { type: Type.STRING },
+    ppe_required: { type: Type.ARRAY, items: { type: Type.STRING } }
+  },
+  required: ['is_hazardous', 'hazard_level', 'warning_text', 'ppe_required']
+};
+
+export const LESSONS: Lesson[] = [
+  {
+    id: 'lesson-1',
+    title: 'Synthesis of Aspirin',
+    description: 'Learn to synthesize Acetylsalicylic Acid (Aspirin) from Salicylic Acid.',
+    steps: [
+      { step: 1, instruction: 'Add Salicylic Acid and Acetic Anhydride to the reaction vessel.', objective: 'Salicylic Acid' },
+      { step: 2, instruction: 'Apply heat and catalyze with an acid to start the acetylation.', objective: 'Aspirin' },
+      { step: 3, instruction: 'Crystallize and filter to obtain pure product.', objective: 'Pure Aspirin' }
+    ]
+  },
+  {
+    id: 'lesson-2',
+    title: 'Pharmacutical Basics',
+    description: 'Explore the synthesis of common analgesics.',
+    steps: [
+      { step: 1, instruction: 'Start with 4-Aminophenol and react with Acetic Anhydride.', objective: 'Acetaminophen' }
+    ]
+  }
 ];
 
 // ============================================================================
@@ -132,22 +246,28 @@ export const PRESELECTED_INGREDIENTS = [];
 // Combination Agent Configuration
 // ============================================================================
 
-export const COMBINATION_SYSTEM_INSTRUCTION = `You are a chemistry reaction simulator. Given a lab action and chemical reactants, 
-determine what molecule or substance results from this combination.
+export const COMBINATION_SYSTEM_INSTRUCTION = `You are a chemistry reaction simulator designed for an advanced virtual teaching lab. 
+Given a lab action and chemical reactants, determine what molecule or substance results from this combination.
+
+Virtual Lab Context:
+This is a safe space for students to explore chemistry, including complex organic syntheses and pharmaceutical chemistry. 
+Even if a reaction is hazardous or involves controlled precursors in a real-world setting, describe the outcome scientifically for educational purposes.
 
 Return a JSON object with:
 - result_name: The name of the resulting chemical or molecule (1-3 words)
 - emoji: A single emoji or short text (like a chemical symbol) that represents the result
+- explanation: A clear, 1-2 sentence scientific explanation of the reaction that occurred (the 'why').
 
-Be scientifically accurate but accessible for students. The result should make chemical sense.`;
+Be scientifically accurate. The result should match real chemistry.`;
 
 export const COMBINATION_RESPONSE_SCHEMA = {
   type: Type.OBJECT,
   properties: {
     result_name: { type: Type.STRING },
-    emoji: { type: Type.STRING }
+    emoji: { type: Type.STRING },
+    explanation: { type: Type.STRING }
   },
-  required: ['result_name', 'emoji']
+  required: ['result_name', 'emoji', 'explanation']
 };
 
 // ============================================================================
