@@ -1,0 +1,16 @@
+# Tasks: App Running & Chemistry Tool Plan
+
+- [x] Gather Requirements
+- [x] Analyze Technical Feasibility
+- [x] Define API Contracts
+- [x] Decompose into Tasks
+- [x] Review Plan with User
+- [x] Integrate Pharmaceutical Database
+- [/] Implement Lesson Mode UI & Logic in `App.tsx`
+- [ ] Implement Safety Feedback Logic in `App.tsx`
+- [ ] Export Brain Data to GitHub
+    - [x] Create `.brain` directory in repository root
+    - [x] Copy current conversation artifacts to `.brain/`
+    - [ ] Commit and push changes to GitHub
+- [ ] Implement Educational Insights display in `App.tsx`
+- [ ] Final Verification and Walkthrough

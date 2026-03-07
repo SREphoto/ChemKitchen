@@ -1,0 +1,172 @@
+Function Calling Lab
+Challenge Gemini 3 Flash's function calling capabilities:
+🧪 ULTIMATE CHEMISTRY CHALLENGE! 🧪
+Sequence tasks from 100 tools and 100 chemicals to synthesize a molecule
+Target Molecules
+Target molecules to synthesize with function calling
+easy
+💧
+Water
+Not started
+[0] (328,339)<button class='order-button'>Start />
+intermediate
+💊
+Aspirin
+Not started
+[1] (394,339)<button class='order-button'>Start />
+difficult
+💉
+Penicillin
+Not started
+[2] (460,339)<button class='order-button'>Start />
+[3] (528,303)<div  />
+	[4] (528,286)<div >📋 />
+	[5] (528,311)<div >Add New Target />
+	[6] (528,328)<div >Click to add />
+Lab Window
+Watch the chemist at work
+👨‍🔬
+Waiting for instructions...
+Chemicals
+Select chemicals to use as function arguments
+count:
+35
+[7] (391,821)<div class='ingredients-grid' scrollable='true' />
+	Cl
+	Chlorine
+	K
+	Potassium
+	Ca
+	Calcium
+	Fe
+	Iron
+	Cu
+	Copper
+	Zn
+	Zinc
+	Ag
+	Silver
+	I
+	Iodine
+	Au
+	Gold
+	Hg
+	Mercury
+	Pb
+	Lead
+	F
+	Fluorine
+	Br
+	Bromine
+	💧
+	Water
+	💨
+	Carbon Dioxide
+	💨
+	Ammonia
+	💨
+	Methane
+	🧪
+	Hydrochloric Acid
+	🧪
+	Sodium Hydroxide
+	🧪
+	Sulfuric Acid
+	🧪
+	Nitric Acid
+	🧪
+	Acetic Acid
+	🍺
+	Ethanol
+	⬡
+	Benzene
+	⬡
+	Phenol
+	⬡
+	Salicylic Acid
+	🧪
+	Acetic Anhydride
+Lab Tools
+Use function calls to combine chemicals
+count:
+26
+[8] (605,821)<div class='actions-grid' scrollable='true' />
+	🧪
+	synthesize
+	()
+	💥
+	decompose
+	()
+	🔥
+	combust
+	()
+	💨
+	oxidize
+	()
+	🔋
+	reduce
+	()
+	⚖️
+	neutralize
+	()
+	❄️
+	precipitate
+	()
+	💧
+	hydrolyze
+	()
+	⛓️
+	polymerize
+	()
+	⚡
+	catalyze
+	()
+	⚗️
+	distill
+	()
+	💎
+	crystallize
+	()
+	🚰
+	titrate
+	()
+	🧫
+	extract
+	()
+	☕
+	filter
+	()
+	🌀
+	centrifuge
+	()
+	🔥
+	heat
+	()
+	❄️
+	cool
+	()
+	🗜️
+	pressurize
+	()
+	🎈
+	depressurize
+	()
+	☢️
+	irradiate
+	()
+	⚡
+	electrolyze
+	()
+	🦠
+	ferment
+	()
+	🌪️
+	dissolve
+	()
+	🔬
+	serve
+	()
+	🏳️
+	pass
+	()
+Agents

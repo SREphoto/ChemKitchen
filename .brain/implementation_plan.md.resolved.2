@@ -1,0 +1,56 @@
+# ChemKitchen Teaching Tool Enhancement
+
+Enhance the ChemKitchen application to transition it from a pure simulation into an educational tool. This involves adding guided lessons, safety validation for chemical reactions, and scientific explanations for synthesis steps.
+
+## Proposed Changes
+
+### Core Chemistry Engine
+
+#### [MODIFY] [constants.ts](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/constants.ts)
+- [x] Update `COMBINATION_SYSTEM_INSTRUCTION` to require a scientific explanation for each reaction.
+- [x] Update `COMBINATION_RESPONSE_SCHEMA` to include an `explanation` field (Type.STRING).
+- [x] Add `SafetyFeedback` interface.
+- [x] Add `SAFETY_SYSTEM_INSTRUCTION` and `SAFETY_RESPONSE_SCHEMA` for a new Safety Validator Agent.
+- [x] Add [Lesson](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/constants.ts#39-45) and [LessonStep](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/constants.ts#33-38) interfaces for structured teaching.
+- [x] Added `LESSONS` array with initial curriculum.
+- [x] Expanded `STARTING_INGREDIENTS` with 100+ pharmaceutical compounds.
+
+### Simulation Logic
+
+#### [MODIFY] [App.tsx](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx)
+- Add state at [LabAppContainer](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#1397-1602) levels:
+    - `isLessonMode` (boolean)
+    - `currentLesson` (Lesson | null)
+    - `currentStepIndex` (number)
+    - `safetyFeedback` (SafetyFeedback | null)
+- Update `executeCombination` to:
+    - Extract and return the `explanation` field from the API response.
+    - Add the explanation to the [TimelineEntry](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/constants.ts#46-56).
+- Update `executeAction` to:
+    - Call `validateSafety` before executing the combination.
+    - Check if the `newIngredient` matches the `objective` of the `currentStep` if in lesson mode.
+    - Advance `currentStepIndex` if the objective is met.
+
+### UI Enhancements
+
+#### [MODIFY] [App.tsx](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx) (cont.)
+- [NEW] `LessonPanel` component:
+    - Dropdown to select a lesson from `LESSONS`.
+    - Progress indicator (e.g., "Step 2 of 4").
+    - Current instruction and objective display.
+- [NEW] `SafetyAlert` component:
+    - Warning banner that appears when `safetyFeedback` is present.
+    - Displays hazard level, warning text, and required PPE.
+- Update [TimelineItem](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#244-291) to render the `explanation` text and safety tags.
+- Update [LabAppContainer](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#1397-1602) to include the `LessonPanel` at the top of the `lab-app` div.
+
+## Verification Plan
+
+### Automated Tests
+- Since there are no existing tests, I will implement a basic suite of unit tests for the [resolveIngredientName](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#68-98) and [normalizeIngredientName](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#51-58) functions to ensure inventory matching remains robust.
+- Command: `npm test` (Will need to add a test runner like Vitest first).
+
+### Manual Verification
+1. **Try an Unsafe Reaction**: Attempt to "Synthesize" something like "Water" + "Sodium" (if added) and verify that the Safety Validator triggers a warning.
+2. **Complete a Lesson**: Select "Lesson 1: Synthesis of Water", follow the steps, and verify that the app correctly advances the step count when Water is produced.
+3. **Check Explanations**: Verify that every successful synthesis results in a text explanation appearing in the timeline.

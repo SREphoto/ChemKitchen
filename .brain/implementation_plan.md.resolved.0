@@ -1,0 +1,42 @@
+# ChemKitchen Teaching Tool Enhancement
+
+Enhance the ChemKitchen application to transition it from a pure simulation into an educational tool. This involves adding guided lessons, safety validation for chemical reactions, and scientific explanations for synthesis steps.
+
+## Proposed Changes
+
+### Core Chemistry Engine
+
+#### [MODIFY] [constants.ts](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/constants.ts)
+- Update `COMBINATION_SYSTEM_INSTRUCTION` to require a scientific explanation for each reaction.
+- Update `COMBINATION_RESPONSE_SCHEMA` to include an `explanation` field (Type.STRING).
+- Add `SafetyFeedback` interface.
+- Add `SAFETY_SYSTEM_INSTRUCTION` and `SAFETY_RESPONSE_SCHEMA` for a new Safety Validator Agent.
+- Add `Lesson` and `LessonStep` interfaces for structured teaching.
+
+### Simulation Logic
+
+#### [MODIFY] [App.tsx](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx)
+- Implement `useSafetyValidation` hook to check reactant safety before processing.
+- Update the simulation loop to intercept "synthesize" calls and run them through the safety validator.
+- Add "Lesson Mode" state management:
+    - Track current lesson and step.
+    - Validate if a synthesis result satisfies the current step's objective.
+- Display "Educational Insights" (explanations) in the timeline.
+
+### UI Enhancements
+
+#### [MODIFY] [App.tsx](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx) (cont.)
+- Add a "Lesson Selection" panel.
+- Update the "Lab Window" to show the current step's instruction.
+- Add a "Safety Alert" toast or modal for hazardous combinations.
+
+## Verification Plan
+
+### Automated Tests
+- Since there are no existing tests, I will implement a basic suite of unit tests for the [resolveIngredientName](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#68-98) and [normalizeIngredientName](file:///r:/Antigravity%20Multiple/ChemKitchen/ChemKitchen/App.tsx#51-58) functions to ensure inventory matching remains robust.
+- Command: `npm test` (Will need to add a test runner like Vitest first).
+
+### Manual Verification
+1. **Try an Unsafe Reaction**: Attempt to "Synthesize" something like "Water" + "Sodium" (if added) and verify that the Safety Validator triggers a warning.
+2. **Complete a Lesson**: Select "Lesson 1: Synthesis of Water", follow the steps, and verify that the app correctly advances the step count when Water is produced.
+3. **Check Explanations**: Verify that every successful synthesis results in a text explanation appearing in the timeline.
