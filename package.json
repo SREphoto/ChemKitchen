@@ -9,17 +9,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
     "@google/genai": "^1.30.0",
-    "zustand": "^5.0.8",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "classnames": "^2.5.1",
     "eventemitter3": "^5.0.1",
+    "lodash": "^4.17.21",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-select": "^5.10.2",
     "react-syntax-highlighter": "^16.1.0",
-    "lodash": "^4.17.21",
     "three": "^0.182.0",
-    "tone": "^15.1.22"
+    "three-stdlib": "^2.36.1",
+    "tone": "^15.1.22",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

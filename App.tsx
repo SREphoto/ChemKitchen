@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import { GeminiAPIProvider, useGeminiAPIContext } from "./gemini/contexts/GeminiAPIContext";
 import GeminiDebug from "./gemini/components/GeminiDebug";
@@ -43,6 +43,7 @@ import {
   buildSynthesisAgentSystemInstruction,
 } from './constants';
 import { EQUIPMENT_CATALOG, Equipment } from './src/data/equipment';
+import LabScene from './src/components/LabScene';
 
 // ============================================================================
 // Ingredient Normalization Helper
@@ -185,6 +186,7 @@ function EquipmentCatalog() {
 // ============================================================================
 
 interface IngredientTileProps {
+  key?: React.Key;
   ingredient: Ingredient;
   isSelected: boolean;
   isActive: boolean;
@@ -212,6 +214,7 @@ function IngredientTile({ ingredient, isSelected, isActive, isDisabled, onClick 
 // ============================================================================
 
 interface ActionTileProps {
+  key?: React.Key;
   action: LabAction;
   isActive: boolean;
   isDisabled: boolean;
@@ -238,6 +241,7 @@ function ActionTile({ action, isActive, isDisabled, onClick }: ActionTileProps) 
 // ============================================================================
 
 interface TimelineItemProps {
+  key?: React.Key;
   entry: TimelineEntry;
 }
 
@@ -294,6 +298,7 @@ function TimelineItem({ entry }: TimelineItemProps) {
 // ============================================================================
 
 interface OrderCardProps {
+  key?: React.Key;
   order: Order;
   isDisabled: boolean;
   onPickUp: (orderId: string) => void;
@@ -469,6 +474,7 @@ function CombinationAgent({
   isJudgeAgentOpen,
 }: CombinationAgentProps) {
   const { generateContent, setConfig } = useGeminiAPIContext();
+  const [show3D, setShow3D] = useState(true);
 
   // Refs for auto-scroll
   const ingredientsRef = useRef<HTMLDivElement>(null);
@@ -736,26 +742,53 @@ function CombinationAgent({
             <h2 className="section-title">Lab Window</h2>
             <p className="section-subtitle">Watch the chemist at work</p>
           </div>
+          <div className="view-toggle">
+            <button
+              className={`toggle-btn ${!show3D ? 'active' : ''}`}
+              onClick={() => setShow3D(false)}
+            >
+              2D
+            </button>
+            <button
+              className={`toggle-btn ${show3D ? 'active' : ''}`}
+              onClick={() => setShow3D(true)}
+            >
+              3D
+            </button>
+          </div>
         </div>
-        <div className="lab-window">
-          <div className="chemist-character">
-            {activeAction ? '🧑‍🔬' : '👨‍🔬'}
-          </div>
-          <div className="mixing-area">
-            {activeAction ? (
-              <div className="mixing-animation">
-                <span className="mixing-action">{LAB_ACTIONS.find(a => a.name === activeAction)?.emoji}</span>
-                <span className="mixing-ingredients">
-                  {Array.from(activeIngredients).map(name => {
-                    const ing = inventory.find(i => i.name === name);
-                    return ing ? ing.emoji : '🧪';
-                  }).join(' + ')}
-                </span>
+        <div className={`lab-window ${show3D ? 'three-d' : ''}`}>
+          {show3D ? (
+            <div className="three-d-canvas-container">
+              <LabScene
+                activeIngredients={Array.from(activeIngredients)}
+                activeAction={activeAction}
+                selectedIngredients={Array.from(selectedIngredients)}
+                onWebGLFailure={() => setShow3D(false)}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="chemist-character">
+                {activeAction ? '🧑‍🔬' : '👨‍🔬'}
               </div>
-            ) : (
-              <div className="idle-state">Waiting for instructions...</div>
-            )}
-          </div>
+              <div className="mixing-area">
+                {activeAction ? (
+                  <div className="mixing-animation">
+                    <span className="mixing-action">{LAB_ACTIONS.find(a => a.name === activeAction)?.emoji}</span>
+                    <span className="mixing-ingredients">
+                      {Array.from(activeIngredients).map(name => {
+                        const ing = inventory.find(i => i.name === name);
+                        return ing ? ing.emoji : '🧪';
+                      }).join(' + ')}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="idle-state">Waiting for instructions...</div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </section>
 
@@ -1457,6 +1490,7 @@ function LabAppContainer() {
       name: orderName,
       emoji: '📋', // Empty notepad emoji for new orders
       status: 'not_started',
+      difficulty: 'easy',
     };
     // Deselect any in_progress or failed orders, then add the new one
     setOrders(prev => [
