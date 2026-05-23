@@ -71,7 +71,7 @@ function findIngredientInInventory(name: string, inventory: Ingredient[]): Ingre
  */
 function resolveIngredientName(name: string, inventory: Ingredient[]): Ingredient | null {
   const normalizedSearch = normalizeIngredientName(name);
-  
+
   // 1. Exact normalized match
   let match = findIngredientInInventory(name, inventory);
   if (match) return match;
@@ -115,8 +115,8 @@ function EquipmentCatalog() {
   const categories = ['All', ...Array.from(new Set(EQUIPMENT_CATALOG.map(e => e.category)))];
 
   const filteredEquipment = EQUIPMENT_CATALOG.filter(e => {
-    const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          e.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || e.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -134,15 +134,15 @@ function EquipmentCatalog() {
       <div className="catalog-controls">
         <div className="search-wrapper">
           <span className="material-symbols-outlined">search</span>
-          <input 
-            type="text" 
-            placeholder="Search equipment..." 
+          <input
+            type="text"
+            placeholder="Search equipment..."
             className="catalog-search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <select 
+        <select
           className="catalog-category-select"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
@@ -157,10 +157,10 @@ function EquipmentCatalog() {
         {filteredEquipment.map(item => (
           <div key={item.id} className="equipment-card">
             <div className="equipment-image-container">
-              <img 
-                src={item.imageUrl} 
-                alt={item.name} 
-                className="equipment-image" 
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className="equipment-image"
                 referrerPolicy="no-referrer"
               />
               <div className="equipment-category-tag">{item.category}</div>
@@ -186,7 +186,6 @@ function EquipmentCatalog() {
 // ============================================================================
 
 interface IngredientTileProps {
-  key?: React.Key;
   ingredient: Ingredient;
   isSelected: boolean;
   isActive: boolean;
@@ -214,7 +213,6 @@ function IngredientTile({ ingredient, isSelected, isActive, isDisabled, onClick 
 // ============================================================================
 
 interface ActionTileProps {
-  key?: React.Key;
   action: LabAction;
   isActive: boolean;
   isDisabled: boolean;
@@ -241,7 +239,6 @@ function ActionTile({ action, isActive, isDisabled, onClick }: ActionTileProps) 
 // ============================================================================
 
 interface TimelineItemProps {
-  key?: React.Key;
   entry: TimelineEntry;
 }
 
@@ -298,7 +295,6 @@ function TimelineItem({ entry }: TimelineItemProps) {
 // ============================================================================
 
 interface OrderCardProps {
-  key?: React.Key;
   order: Order;
   isDisabled: boolean;
   onPickUp: (orderId: string) => void;
@@ -1013,9 +1009,9 @@ function SynthesisAgent({
           // Store text to merge with function call entry
           pendingTextRef.current = text;
         } else {
-        // Text-only response, add as standalone entry
+          // Text-only response, add as standalone entry
           setTimeline(prev => {
-          // Check if we already have this text (avoid duplicates)
+            // Check if we already have this text (avoid duplicates)
             const hasText = prev.some(e => e.text === text && !e.action);
             if (hasText) return prev;
 
@@ -1044,206 +1040,206 @@ function SynthesisAgent({
       try {
         // Process only the first function call (enforce one at a time)
         const fc = functionCalls[0];
-      if (functionCalls.length > 1) {
-        console.warn('Synthesis Agent returned multiple function calls, only processing the first one');
-      }
-
-      const actionName = fc.name || '';
-      const args = fc.args as { ingredients?: string[]; dish?: string } || {};
-
-      // Handle serve action
-      if (actionName === 'serve') {
-        const dishName = args.dish || 'molecule';
-        console.log(`🔬 Submitting: ${dishName}`);
-
-        // Add serve to timeline
-        setTimeline(prev => [...prev, {
-          id: `serve-${Date.now()}`,
-          timestamp: new Date(),
-          text: `🔬 Submitted: ${dishName}`,
-        }]);
-
-        // Trigger verification agent and wait for result
-        const verificationSuccess = await onServe(dishName);
-
-        // Send function response based on verification result
-        await sendMessage([{
-          functionResponse: {
-            name: 'serve',
-            response: verificationSuccess
-              ? { success: true, message: `${dishName} has been submitted and verified!` }
-              : { success: false, error: `${dishName} did not match any pending target. Please try again.` }
-          }
-        }]);
-        return;
-      }
-
-      // Handle pass action - give up on current order
-      if (actionName === 'pass') {
-        console.log('🏳️ Passing on current order');
-
-        // Notify parent to mark the current order as failed
-        onPass();
-
-        // Add pass to timeline
-        setTimeline(prev => [...prev, {
-          id: `pass-${Date.now()}`,
-          timestamp: new Date(),
-          text: '🏳️ Called pass on the order',
-        }]);
-
-        // Send function response confirming the pass
-        await sendMessage([{
-          functionResponse: {
-            name: 'pass',
-            response: { success: true, message: 'Order has been abandoned.' }
-          }
-        }]);
-        return;
-      }
-
-      // Handle synthesis actions
-      const requestedIngredients = args.ingredients || [];
-      const timelineId = `synthesis-${Date.now()}`;
-
-      // Find the action
-      const action = LAB_ACTIONS.find(a => a.name === actionName);
-      if (!action) {
-        console.error(`Unknown action: ${actionName}`);
-        await sendMessage([{
-          functionResponse: {
-            name: actionName,
-            response: { success: false, error: `Unknown action: ${actionName}` }
-          }
-        }]);
-        return;
-      }
-
-      // Validate all requested ingredients exist in inventory (case/spacing/symbol insensitive)
-      const validatedIngredients: string[] = [];
-      const missingIngredients: string[] = [];
-      for (const requestedName of requestedIngredients) {
-        const found = resolveIngredientName(requestedName, inventory);
-        if (found) {
-          // Use the actual inventory name (normalized match found)
-          // Avoid adding duplicates to the validated list
-          const normalizedFound = normalizeIngredientName(found.name);
-          if (!validatedIngredients.some(v => normalizeIngredientName(v) === normalizedFound)) {
-            validatedIngredients.push(found.name);
-          }
-        } else {
-          missingIngredients.push(requestedName);
+        if (functionCalls.length > 1) {
+          console.warn('Synthesis Agent returned multiple function calls, only processing the first one');
         }
-      }
 
-      // If any ingredients are missing, send an error response
-      if (missingIngredients.length > 0) {
-        console.error(`Ingredients not found in inventory: ${missingIngredients.join(', ')}`);
-        await sendMessage([{
-          functionResponse: {
-            name: actionName,
-            response: {
-              success: false,
-              error: `Ingredients not found in inventory: ${missingIngredients.join(', ')}. Please only use ingredients that exist in the current inventory.`
+        const actionName = fc.name || '';
+        const args = fc.args as { ingredients?: string[]; dish?: string } || {};
+
+        // Handle serve action
+        if (actionName === 'serve') {
+          const dishName = args.dish || 'molecule';
+          console.log(`🔬 Submitting: ${dishName}`);
+
+          // Add serve to timeline
+          setTimeline(prev => [...prev, {
+            id: `serve-${Date.now()}`,
+            timestamp: new Date(),
+            text: `🔬 Submitted: ${dishName}`,
+          }]);
+
+          // Trigger verification agent and wait for result
+          const verificationSuccess = await onServe(dishName);
+
+          // Send function response based on verification result
+          await sendMessage([{
+            functionResponse: {
+              name: 'serve',
+              response: verificationSuccess
+                ? { success: true, message: `${dishName} has been submitted and verified!` }
+                : { success: false, error: `${dishName} did not match any pending target. Please try again.` }
             }
-          }
-        }]);
-        return;
-      }
-
-      // Use validated ingredients (with actual inventory names) going forward
-      const ingredients = validatedIngredients;
-
-      // Add loading placeholder (include any pending text from model response)
-      const pendingText = pendingTextRef.current;
-      pendingTextRef.current = null; // Clear pending text
-
-      const loadingEntry: TimelineEntry = {
-        id: timelineId,
-        timestamp: new Date(),
-        text: pendingText || undefined,
-        action: actionName,
-        ingredients: ingredients,
-        result: null,
-      };
-      setTimeline(prev => [...prev, loadingEntry]);
-      setActiveAction(actionName);
-      setActionTriggerCount(prev => prev + 1);
-      setActiveIngredients(new Set(ingredients));
-
-      try {
-        // Call the Combination Agent via the shared ref
-        let newIngredient: Ingredient | null = null;
-
-        if (executeCombinationRef.current) {
-          newIngredient = await executeCombinationRef.current(action, ingredients);
+          }]);
+          return;
         }
 
-        if (!newIngredient) {
-          // Fallback if combination agent unavailable
-          newIngredient = {
-            name: `${action.displayName}ed ${ingredients.join(' & ')}`,
-            emoji: action.emoji,
-          };
-        }
+        // Handle pass action - give up on current order
+        if (actionName === 'pass') {
+          console.log('🏳️ Passing on current order');
 
-        // Update timeline
-        setTimeline(prev => prev.map(entry =>
-          entry.id === timelineId
-            ? { ...entry, result: newIngredient }
-            : entry
-        ));
+          // Notify parent to mark the current order as failed
+          onPass();
 
-        // Add to inventory (at the beginning for recently used items at top)
-        // But skip if this ingredient already exists (duplicate check)
-        setInventory(prev => {
-          if (isDuplicateIngredient(newIngredient!.name, prev)) {
-            console.log(`Skipping duplicate ingredient: ${newIngredient!.name}`);
-            return prev;
-          }
-          return [newIngredient!, ...prev];
-        });
+          // Add pass to timeline
+          setTimeline(prev => [...prev, {
+            id: `pass-${Date.now()}`,
+            timestamp: new Date(),
+            text: '🏳️ Called pass on the order',
+          }]);
 
-        // Send function response back to Synthesis Agent
-        await sendMessage([{
-          functionResponse: {
-            name: actionName,
-            response: {
-              success: true,
-              result: newIngredient.name,
-              emoji: newIngredient.emoji,
-              inventory_updated: true
+          // Send function response confirming the pass
+          await sendMessage([{
+            functionResponse: {
+              name: 'pass',
+              response: { success: true, message: 'Order has been abandoned.' }
             }
-          }
-        }]);
+          }]);
+          return;
+        }
 
-      } catch (error) {
-        console.error('Error handling synthesis action:', error);
-        
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const isRateLimit = errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED');
-        
-        setTimeline(prev => prev.map(entry =>
-          entry.id === timelineId
-            ? { ...entry, result: { name: isRateLimit ? 'Rate Limit Exceeded' : 'Error', emoji: '⚠️' } }
-            : entry
-        ));
+        // Handle synthesis actions
+        const requestedIngredients = args.ingredients || [];
+        const timelineId = `synthesis-${Date.now()}`;
 
-        try {
-          // Send error response
+        // Find the action
+        const action = LAB_ACTIONS.find(a => a.name === actionName);
+        if (!action) {
+          console.error(`Unknown action: ${actionName}`);
           await sendMessage([{
             functionResponse: {
               name: actionName,
-              response: { success: false, error: errorMessage }
+              response: { success: false, error: `Unknown action: ${actionName}` }
             }
           }]);
-        } catch (sendError) {
-          console.error('Failed to send error response (likely due to rate limit):', sendError);
+          return;
         }
-      } finally {
-        setActiveAction(null);
-        setActiveIngredients(new Set());
-      }
+
+        // Validate all requested ingredients exist in inventory (case/spacing/symbol insensitive)
+        const validatedIngredients: string[] = [];
+        const missingIngredients: string[] = [];
+        for (const requestedName of requestedIngredients) {
+          const found = resolveIngredientName(requestedName, inventory);
+          if (found) {
+            // Use the actual inventory name (normalized match found)
+            // Avoid adding duplicates to the validated list
+            const normalizedFound = normalizeIngredientName(found.name);
+            if (!validatedIngredients.some(v => normalizeIngredientName(v) === normalizedFound)) {
+              validatedIngredients.push(found.name);
+            }
+          } else {
+            missingIngredients.push(requestedName);
+          }
+        }
+
+        // If any ingredients are missing, send an error response
+        if (missingIngredients.length > 0) {
+          console.error(`Ingredients not found in inventory: ${missingIngredients.join(', ')}`);
+          await sendMessage([{
+            functionResponse: {
+              name: actionName,
+              response: {
+                success: false,
+                error: `Ingredients not found in inventory: ${missingIngredients.join(', ')}. Please only use ingredients that exist in the current inventory.`
+              }
+            }
+          }]);
+          return;
+        }
+
+        // Use validated ingredients (with actual inventory names) going forward
+        const ingredients = validatedIngredients;
+
+        // Add loading placeholder (include any pending text from model response)
+        const pendingText = pendingTextRef.current;
+        pendingTextRef.current = null; // Clear pending text
+
+        const loadingEntry: TimelineEntry = {
+          id: timelineId,
+          timestamp: new Date(),
+          text: pendingText || undefined,
+          action: actionName,
+          ingredients: ingredients,
+          result: null,
+        };
+        setTimeline(prev => [...prev, loadingEntry]);
+        setActiveAction(actionName);
+        setActionTriggerCount(prev => prev + 1);
+        setActiveIngredients(new Set(ingredients));
+
+        try {
+          // Call the Combination Agent via the shared ref
+          let newIngredient: Ingredient | null = null;
+
+          if (executeCombinationRef.current) {
+            newIngredient = await executeCombinationRef.current(action, ingredients);
+          }
+
+          if (!newIngredient) {
+            // Fallback if combination agent unavailable
+            newIngredient = {
+              name: `${action.displayName}ed ${ingredients.join(' & ')}`,
+              emoji: action.emoji,
+            };
+          }
+
+          // Update timeline
+          setTimeline(prev => prev.map(entry =>
+            entry.id === timelineId
+              ? { ...entry, result: newIngredient }
+              : entry
+          ));
+
+          // Add to inventory (at the beginning for recently used items at top)
+          // But skip if this ingredient already exists (duplicate check)
+          setInventory(prev => {
+            if (isDuplicateIngredient(newIngredient!.name, prev)) {
+              console.log(`Skipping duplicate ingredient: ${newIngredient!.name}`);
+              return prev;
+            }
+            return [newIngredient!, ...prev];
+          });
+
+          // Send function response back to Synthesis Agent
+          await sendMessage([{
+            functionResponse: {
+              name: actionName,
+              response: {
+                success: true,
+                result: newIngredient.name,
+                emoji: newIngredient.emoji,
+                inventory_updated: true
+              }
+            }
+          }]);
+
+        } catch (error) {
+          console.error('Error handling synthesis action:', error);
+
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          const isRateLimit = errorMessage.includes('429') || errorMessage.includes('RESOURCE_EXHAUSTED');
+
+          setTimeline(prev => prev.map(entry =>
+            entry.id === timelineId
+              ? { ...entry, result: { name: isRateLimit ? 'Rate Limit Exceeded' : 'Error', emoji: '⚠️' } }
+              : entry
+          ));
+
+          try {
+            // Send error response
+            await sendMessage([{
+              functionResponse: {
+                name: actionName,
+                response: { success: false, error: errorMessage }
+              }
+            }]);
+          } catch (sendError) {
+            console.error('Failed to send error response (likely due to rate limit):', sendError);
+          }
+        } finally {
+          setActiveAction(null);
+          setActiveIngredients(new Set());
+        }
       } catch (globalError) {
         console.error('Global error in handleApprovedFunctionCalls:', globalError);
         const errorMessage = globalError instanceof Error ? globalError.message : String(globalError);
