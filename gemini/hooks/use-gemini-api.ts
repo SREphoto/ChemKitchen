@@ -51,6 +51,12 @@ function getApiKey(): string {
     return process.env.API_KEY;
   }
 
+  // Try localStorage
+  if (typeof localStorage !== 'undefined') {
+    const localKey = localStorage.getItem('VITE_GEMINI_API_KEY');
+    if (localKey) return localKey;
+  }
+
   return '';
 }
 

@@ -1632,12 +1632,139 @@ function LabAppContainer() {
   );
 }
 
-// ============================================================================
-// App Component
-// ============================================================================
-
 function App() {
-  return <LabAppContainer />;
+  const [apiKey, setApiKey] = useState(() => {
+    // Check if key exists in env or localStorage
+    const envKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY) || '';
+    if (envKey) return envKey;
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('VITE_GEMINI_API_KEY') || '';
+    }
+    return '';
+  });
+
+  const [inputKey, setInputKey] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSaveKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputKey.trim()) {
+      setError('Please enter a valid API key.');
+      return;
+    }
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('VITE_GEMINI_API_KEY', inputKey.trim());
+    }
+    setApiKey(inputKey.trim());
+  };
+
+  const handleClearKey = () => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('VITE_GEMINI_API_KEY');
+    }
+    setApiKey('');
+    setInputKey('');
+  };
+
+  const isEnvKey = !!(typeof import.meta !== 'undefined' && import.meta.env?.VITE_GEMINI_API_KEY);
+
+  if (!apiKey) {
+    return (
+      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '24px' }}>
+        <div className="bg-blob blob-1"></div>
+        <div className="bg-blob blob-2"></div>
+        
+        <div className="lab-section api-key-prompt" style={{ maxWidth: '480px', width: '100%', boxSizing: 'border-box' }}>
+          <div className="section-header" style={{ flexDirection: 'column', alignItems: 'center', marginBottom: '16px', gap: '8px' }}>
+            <div className="challenge-title" style={{ fontSize: '24px', margin: '0' }}>🧪 ChemKitchen Setup</div>
+            <p className="section-subtitle" style={{ textAlign: 'center', fontSize: '14px', margin: '0' }}>
+              Gemini Function Calling Laboratory
+            </p>
+          </div>
+          
+          <p style={{ fontSize: '14px', marginBottom: '24px', textAlign: 'center', lineHeight: '1.6', color: 'var(--text-primary)' }}>
+            To run this app on GitHub Pages, a Google Gemini API Key is required. Your key will be saved locally in your browser's storage and sent directly to Google APIs.
+          </p>
+          
+          <form onSubmit={handleSaveKey} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--neon-cyan)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Enter Gemini API Key:
+              </label>
+              <input
+                type="password"
+                placeholder="AIzaSy..."
+                value={inputKey}
+                onChange={(e) => {
+                  setInputKey(e.target.value);
+                  setError('');
+                }}
+                className="order-input"
+                style={{ textAlign: 'left', fontSize: '14px', padding: '12px 16px' }}
+              />
+              {error && <span style={{ color: 'var(--danger-red)', fontSize: '12px', marginTop: '4px' }}>{error}</span>}
+            </div>
+            
+            <button type="submit" className="order-button synthesis-button" style={{ width: '100%', padding: '12px 20px', fontSize: '14px', fontWeight: 700, margin: '0' }}>
+              🚀 Initialize Lab
+            </button>
+          </form>
+          
+          <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}>
+            <a
+              href="https://aistudio.google.com/app/apikey"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--warning-amber)', fontSize: '13px', textDecoration: 'none', fontWeight: 600 }}
+              onMouseOver={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseOut={(e) => (e.currentTarget.style.textDecoration = 'none')}
+            >
+              Get a free Gemini API Key from Google AI Studio ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <LabAppContainer />
+      {/* Floating clear key button to let users switch keys if needed */}
+      {!isEnvKey && (
+        <button
+          onClick={handleClearKey}
+          style={{
+            position: 'fixed',
+            bottom: '16px',
+            right: '16px',
+            zIndex: 9999,
+            background: 'rgba(5, 5, 10, 0.85)',
+            border: '1px solid rgba(255, 77, 77, 0.4)',
+            borderRadius: '8px',
+            color: 'var(--danger-red)',
+            padding: '8px 12px',
+            fontSize: '11px',
+            fontWeight: 700,
+            cursor: 'pointer',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 77, 77, 0.15)';
+            e.currentTarget.style.borderColor = 'var(--danger-red)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = 'rgba(5, 5, 10, 0.85)';
+            e.currentTarget.style.borderColor = 'rgba(255, 77, 77, 0.4)';
+          }}
+        >
+          🔑 Reset API Key
+        </button>
+      )}
+    </>
+  );
 }
 
 export default App;
