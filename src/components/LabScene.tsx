@@ -4,6 +4,12 @@ import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
 import Beaker from './Equipment/Beaker';
 import TestTube from './Equipment/TestTube';
 import RoundBottomFlask from './Equipment/RoundBottomFlask';
+import CatalysisFlask from './Equipment/CatalysisFlask';
+import HeatingMantle from './Equipment/HeatingMantle';
+import BunsenBurner from './Equipment/BunsenBurner';
+import BombCalorimeter from './Equipment/BombCalorimeter';
+import CHNAnalyzer from './Equipment/CHNAnalyzer';
+import SparkParticles from './Effects/SparkParticles';
 
 // WebGL Compatibility check
 function isWebGLAvailable() {
@@ -87,20 +93,30 @@ export default function LabScene({
     return null;
   }
 
-  // 1. Determine which vessel type to render
-  let vesselType: 'beaker' | 'testtube' | 'flask' = 'beaker';
+  type SetupType = 'beaker' | 'testtube' | 'flask' | 'catalysis_setup' | 'combust_setup' | 'oxidize_setup' | 'heat_setup' | 'analyze_setup';
+
+  // 1. Determine which setup type to render
+  let setupType: SetupType = 'beaker';
   if (activeAction) {
     const action = activeAction.toLowerCase();
-    if (action.includes('centrifuge') || action.includes('precipitate')) {
-      vesselType = 'testtube';
+    if (action === 'catalyze') {
+      setupType = 'catalysis_setup';
+    } else if (action === 'combust') {
+      setupType = 'combust_setup';
+    } else if (action === 'oxidize' || action === 'decompose') {
+      setupType = 'oxidize_setup';
+    } else if (action === 'heat') {
+      setupType = 'heat_setup';
+    } else if (action === 'serve') {
+      setupType = 'analyze_setup';
+    } else if (action.includes('centrifuge') || action.includes('precipitate')) {
+      setupType = 'testtube';
     } else if (
       action.includes('synthesize') ||
-      action.includes('decompose') ||
       action.includes('polymerize') ||
-      action.includes('catalyze') ||
       action.includes('distill')
     ) {
-      vesselType = 'flask';
+      setupType = 'flask';
     }
   }
 
@@ -114,7 +130,7 @@ export default function LabScene({
     fillLevel = 0.7; // Standard filled level for reaction
   } else if (selectedIngredients.length > 0) {
     // Idle, but ingredients selected: show them in beaker
-    vesselType = 'beaker';
+    setupType = 'beaker';
     chemicalName = selectedIngredients[0];
     fillLevel = Math.min(0.9, 0.3 * selectedIngredients.length);
   } else {
@@ -123,8 +139,59 @@ export default function LabScene({
     fillLevel = 0.0;
   }
 
-  const renderVessel = () => {
-    switch (vesselType) {
+  const renderSetup = () => {
+    switch (setupType) {
+      case 'catalysis_setup':
+        return (
+          <group>
+            <HeatingMantle isActive={true} position={[0, -0.05, 0]} />
+            <CatalysisFlask
+              ingredientName={chemicalName}
+              fillLevel={fillLevel}
+              activeAction={activeAction}
+              position={[0, -0.05, 0]}
+            />
+            <SparkParticles position={[0, -0.01, 0]} count={30} />
+          </group>
+        );
+      case 'combust_setup':
+        return (
+          <BombCalorimeter
+            activeAction={activeAction}
+            position={[0, -0.05, 0]}
+          />
+        );
+      case 'oxidize_setup':
+        return (
+          <group>
+            <BunsenBurner activeAction={activeAction} position={[0, -0.05, 0]} />
+            <RoundBottomFlask
+              ingredientName={chemicalName}
+              fillLevel={fillLevel}
+              activeAction={activeAction}
+              position={[0, 0.058, 0]}
+            />
+          </group>
+        );
+      case 'heat_setup':
+        return (
+          <group>
+            <HeatingMantle isActive={true} position={[0, -0.05, 0]} />
+            <RoundBottomFlask
+              ingredientName={chemicalName}
+              fillLevel={fillLevel}
+              activeAction={activeAction}
+              position={[0, -0.05, 0]}
+            />
+          </group>
+        );
+      case 'analyze_setup':
+        return (
+          <CHNAnalyzer
+            activeAction={activeAction}
+            position={[0, -0.05, 0]}
+          />
+        );
       case 'testtube':
         return (
           <TestTube
@@ -189,7 +256,7 @@ export default function LabScene({
   
             {/* Render Active Equipment */}
             <group position={[0, -0.02, 0]}>
-              {renderVessel()}
+              {renderSetup()}
             </group>
   
             {/* Ground Shadows */}

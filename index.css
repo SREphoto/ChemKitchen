@@ -1,13 +1,110 @@
+:root {
+  --neon-cyan: #00f3ff;
+  --stealth-green: #00ff75;
+  --deep-purple: #bd00ff;
+  --danger-red: #ff4d4d;
+  --warning-amber: #ffd700;
+
+  --primary: var(--neon-cyan);
+  --secondary: var(--deep-purple);
+  --accent: var(--danger-red);
+
+  /* Glassmorphism Design System Tokens */
+  --glass-bg: rgba(5, 5, 10, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(20px);
+  --glass-edge: 1px solid rgba(255, 255, 255, 0.08);
+
+  --text-primary: rgba(255, 255, 255, 0.96);
+  --text-secondary: rgba(255, 255, 255, 0.5);
+  --card-bg: rgba(0, 0, 0, 0.65);
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  min-height: 100vh;
+  background-color: #020205;
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(0, 243, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(189, 0, 255, 0.08) 0%, transparent 45%);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Space Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Dynamic Animated Background Blobs */
+.bg-blob {
+  position: fixed;
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  opacity: 0.12;
+  pointer-events: none;
+  animation: float-blob 22s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+  background: var(--neon-cyan);
+  top: -10%;
+  left: -5%;
+}
+
+.blob-2 {
+  background: var(--deep-purple);
+  bottom: -10%;
+  right: -5%;
+  animation-delay: -6s;
+}
+
+@keyframes float-blob {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(8%, 10%) scale(1.12);
+  }
+}
+
+/* Antigravity Glassmorphism Utilities */
+.antigravity-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-edge);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.antigravity-glass:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 243, 255, 0.08);
+}
+
+/* Premium Typography Gradients */
+.text-gradient {
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--neon-cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--deep-purple) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 12px rgba(0, 243, 255, 0.45);
 }

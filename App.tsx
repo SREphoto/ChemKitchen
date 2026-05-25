@@ -1525,6 +1525,8 @@ function LabAppContainer() {
 
   return (
     <div className="app-container">
+      <div className="bg-blob blob-1"></div>
+      <div className="bg-blob blob-2"></div>
       {/* Combination Agent (Layer 1) - for manual synthesis */}
       <GeminiAPIProvider>
         <CombinationAgent

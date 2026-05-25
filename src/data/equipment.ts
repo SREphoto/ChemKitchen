@@ -149,8 +149,8 @@ export const EQUIPMENT_CATALOG: Equipment[] = [
   },
   {
     id: 'eq-20',
-    name: 'Calorimeter',
-    description: 'Used for measuring the heat of chemical reactions or physical changes.',
+    name: 'Bomb Calorimeter',
+    description: 'Used for measuring the heat of combustion reactions under high-pressure conditions.',
     imageUrl: 'https://picsum.photos/seed/calorimeter/400/300',
     category: 'Measurement'
   },
@@ -723,5 +723,19 @@ export const EQUIPMENT_CATALOG: Equipment[] = [
     description: 'Used to digitize physical documents and images.',
     imageUrl: 'https://picsum.photos/seed/scanner/400/300',
     category: 'General Tools'
+  },
+  {
+    id: 'eq-101',
+    name: 'Catalysis Flask',
+    description: 'A round-bottomed flask featuring a distinct catalyst bed at the base to accelerate reaction kinetics.',
+    imageUrl: 'https://picsum.photos/seed/catalysisflask/400/300',
+    category: 'Glassware'
+  },
+  {
+    id: 'eq-102',
+    name: 'CHN Analyzer',
+    description: 'Determines Carbon, Hydrogen, and Nitrogen concentration in organic compounds through high-temperature combustion and analysis.',
+    imageUrl: 'https://picsum.photos/seed/chnanalyzer/400/300',
+    category: 'Analytical Instruments'
   }
 ];
